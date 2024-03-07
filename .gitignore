@@ -1,0 +1,3 @@
+data_venv/
+data/storage/
+*__pycache__/
