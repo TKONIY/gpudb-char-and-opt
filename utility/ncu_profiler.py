@@ -5,6 +5,9 @@ import time
 import argparse
 import subprocess as subp
 
+import sys
+sys.path.append(os.path.dirname(__file__) + "/../")
+
 from report_parser.ncu_parser import NcuParser
 from utility.profiler_logger import LOGGER
 from utility.counter_config import *
@@ -30,10 +33,13 @@ def wait_report():
 def run(cmd):
     binary = ARGS.bin.strip("'")
     cmd += f"-f -o gpudb-perf {binary}"
+    binary_flags = ARGS.bin_flags.strip("'")
+    cmd += f" {binary_flags}"
 
     LOGGER.debug(f"Profiler runs {cmd}")
 
     cmd_list = cmd.split()
+    print(cmd_list)
     out, _ = subp.Popen(
         cmd_list,
         stdin=subp.PIPE,
@@ -70,6 +76,9 @@ def main():
     parser.add_argument(
         "--cmd-flags", default="", type=str, help="Extra flags send to ncu."
     )
+    parser.add_argument(
+        "--bin-flags", default="", type=str, help="Extra flags send to binary."
+    )
 
     global ARGS
     ARGS = parser.parse_args()
@@ -96,7 +105,7 @@ def main():
 
     cmd = append_metric(cmd, metric_list)
 
-    # actual run
+    # TODO: actual run
     run(cmd)
 
     # parse ncu csv data
@@ -105,6 +114,7 @@ def main():
     # print all metrics in per-kernel base
     kernel_list = parser.get_kernel_list()
     kernel_list_str = ",".join(kernel_list)
+    # print(kernel_list)
     LOGGER.debug(f"Kernel list: {kernel_list_str}")
 
     print(f"{len(kernel_list)}")
@@ -116,19 +126,19 @@ def main():
         print("------------------------------------")
         print_res(kn, metric_roofline(), parser)
         print("------------------------------------")
-        print_res(kn, metric_occupancy(), parser)
+        # print_res(kn, metric_occupancy(), parser)
         print("------------------------------------")
-        print_res(kn, metric_compute(), parser)
+        # print_res(kn, metric_compute(), parser)
         print("------------------------------------")
         print_res(kn, metric_memory(), parser)
         print("------------------------------------")
-        print_res(kn, metric_launch(), parser)
+        # print_res(kn, metric_launch(), parser)
         print("------------------------------------")
-        print_res(kn, metric_warp(), parser)
+        # print_res(kn, metric_warp(), parser)
         print("------------------------------------")
-        print_res(kn, metric_detail_warp(), parser)
+        # print_res(kn, metric_detail_warp(), parser)
         print("-----------------------------------------------------")
-        print_res(kn, metric_inst(), parser)
+        # print_res(kn, metric_inst(), parser)
         print("-----------------------------------------------------")
 
 
